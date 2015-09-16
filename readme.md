@@ -10,4 +10,4 @@ Documentation is maintained together with the code in this repository.
 
 ### License
 
-The Lumen framework is open-sourced software licensed under the GPLv3. See the license file included in this repository.
+This service is open-source software licensed under the GPLv3. See the license file included in this repository.
