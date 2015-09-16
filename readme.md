@@ -5,7 +5,7 @@ A service for accessing and updating budget and other datasets used by the Commu
 ## Documentation
 
 Documentation is maintained together with the code in this repository.
-* [Principles](documentation/Principles.md)
+* [Principles](documentation/Design.md)
 * Something else.
 
 ### License
