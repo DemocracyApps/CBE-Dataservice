@@ -2,6 +2,16 @@
 
 There are several key principles and concepts underlying the design of the CBE Data Service.
 
+### Datasets Versus Data Sources
+A dataset is a minimal coherent collection of related data, e.g., a single-year expense budget,
+single-year actual revenue budget, current capital projects set, etc. Going forward, a dataset will not
+contain multiple years or even contain both expense and revenue data.
+
+A data source is what it says - the source of one or more datasets. It may deliver a single dataset
+(e.g., the Asheville CIP API) or multiple (e.g., the current standard file upload for operating budgets).
+
+
+
 ### Dataset - Definition
 The first key principle is that datasets on the service are not themselves considered
 to be the primary sources of information. Rather:
