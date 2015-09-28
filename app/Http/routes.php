@@ -14,3 +14,11 @@
 $app->get('/', function () use ($app) {
     return $app->welcome();
 });
+
+$app->get('/doit', function () use ($app) {
+  return "Howdoo";
+});
+
+$app->post('/doit', 'UploadController@upload');
+
+//$app->post('user/{id}', 'UserController@showProfile');
