@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Providers;
+namespace CBEDataService\Providers;
 
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
 

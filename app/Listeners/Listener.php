@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Listeners;
+namespace CBEDataService\Listeners;
 
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;

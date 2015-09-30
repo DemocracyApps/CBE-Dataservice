@@ -1,7 +1,7 @@
 <?php
 
 
-namespace App\Http\Controllers;
+namespace CBEDataService\Http\Controllers;
 
 
 use Illuminate\Http\Request;

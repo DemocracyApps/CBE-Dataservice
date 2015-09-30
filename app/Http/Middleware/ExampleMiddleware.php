@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Middleware;
+namespace CBEDataService\Http\Middleware;
 
 use Closure;
 

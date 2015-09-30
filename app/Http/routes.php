@@ -11,14 +11,20 @@
 |
 */
 
+Log::info("Top of routes with URI " . \Request::server('REQUEST_URI') .
+          " and method " .\Request::server('REQUEST_METHOD'));
+
 $app->get('/', function () use ($app) {
     return $app->welcome();
 });
+$app->group(['namespace' => 'CBEDataService\Http\Controllers'], function ($app) {
+  $app->get('/doit', function () use ($app) {
+    return "Howdoo";
+  });
 
-$app->get('/doit', function () use ($app) {
-  return "Howdoo";
+  $app->post('/doit', 'UploadController@upload');
 });
 
-$app->post('/doit', 'UploadController@upload');
-
-//$app->post('user/{id}', 'UserController@showProfile');
+//Route::group(['prefix' => 'api/v1'], function () {
+//  Route::resource('datasets/upload',   'API\v1\DatasetsController', []);
+//});

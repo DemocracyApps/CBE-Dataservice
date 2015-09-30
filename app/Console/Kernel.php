@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Console;
+namespace CBEDataService\Console;
 
 use Illuminate\Console\Scheduling\Schedule;
 use Laravel\Lumen\Console\Kernel as ConsoleKernel;
