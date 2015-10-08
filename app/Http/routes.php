@@ -17,12 +17,12 @@ Log::info("Top of routes with URI " . \Request::server('REQUEST_URI') .
 $app->get('/', function () use ($app) {
     return $app->welcome();
 });
-$app->group(['namespace' => 'CBEDataService\Http\Controllers'], function ($app) {
+$app->group(['namespace' => 'CBEDataService\Http\Controllers', 'prefix'=>'api/v1'], function ($app) {
   $app->get('/doit', function () use ($app) {
     return "Howdoo";
   });
 
-  $app->post('/doit', 'UploadController@upload');
+  $app->post('/upload', 'UploadController@upload');
 });
 
 //Route::group(['prefix' => 'api/v1'], function () {
