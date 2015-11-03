@@ -13,7 +13,7 @@ class Kernel extends ConsoleKernel
      * @var array
      */
     protected $commands = [
-        'CBEDataService\Console\Commands\Tester'
+        'CBEDataService\Console\Commands\CDS'
     ];
 
     /**

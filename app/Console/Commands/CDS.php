@@ -3,7 +3,7 @@
 use CBEDataService\Domain\Data\Dataset;
 use Illuminate\Console\Command;
 
-class Tester extends Command
+class CDS extends Command
 {
   /**
    * The name and signature of the console command.
