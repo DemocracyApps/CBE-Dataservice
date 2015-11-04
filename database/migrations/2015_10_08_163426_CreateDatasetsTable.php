@@ -14,11 +14,13 @@ class CreateDatasetsTable extends Migration
     {
         Schema::create('datasets', function (Blueprint $table) {
             $table->increments('id');
-            $table->integer('organization');
-            $table->integer('datasource');
-            $table->string('type');
             $table->string('name');
             $table->integer('year');
+            $table->string('type');
+            $table->string('entity');
+            $table->integer('entity_id');
+            $table->string('datasource');
+            $table->integer('datasource_id');
             $table->timestamps();
         });
     }

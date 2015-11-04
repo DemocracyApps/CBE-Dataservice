@@ -2,7 +2,7 @@
     "organization": "Cary, NC",
     "organization_id": "3",
     "datasource_name": "Test Data Source",
-    "data_source_id": "1",
+    "datasource_id": "1",
     "format": "simplebudget",
     "type": "Expense",
     "year_count": "8",

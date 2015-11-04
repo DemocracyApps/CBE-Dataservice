@@ -1,6 +1,7 @@
 <?php namespace CBEDataService\Console\Commands;
 
 use CBEDataService\Domain\Data\Dataset;
+use CBEDataService\Domain\Data\CSVProcessor;
 use Illuminate\Console\Command;
 
 class CDS extends Command
@@ -10,14 +11,14 @@ class CDS extends Command
    *
    * @var string
    */
-  protected $signature = 'cds:test {name}';
+  protected $signature = 'cds:uploadfile {file}';
 
   /**
    * The console command description.
    *
    * @var string
    */
-  protected $description = 'Test something';
+  protected $description = 'Load a data file as if uploaded from CBE';
 
 
   /**
@@ -27,9 +28,14 @@ class CDS extends Command
    */
   public function handle()
   {
-    $name = $this->argument('name');
-    $ds = new Dataset(3, 2, "Expense", 2010, $name);
-    $ds->values = "This is the data";
-    $ds->save();
+    $filename = $this->argument('file');
+    $datasets = CSVProcessor::ProcessSimpleBudget(json_decode(file_get_contents($filename), true));
+    foreach ($datasets as $ds) {
+      \Log::info("Did dataset " . $ds->name);
+    }
+
+//    $ds = new Dataset(3, 2, "Expense", 2010, $name);
+//    $ds->values = "This is the data";
+//    $ds->save();
   }
 }
