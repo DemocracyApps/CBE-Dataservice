@@ -20,6 +20,7 @@ $app->get('/', function () use ($app) {
 $app->group(['namespace' => 'CBEDataService\Http\Controllers', 'prefix'=>'api/v1'], function ($app) {
 
   $app->get('/datasets', 'DatasetsController@index');
+  $app->get('/datasets/{id}', 'DatasetsController@show');
 
   $app->post('/upload', 'UploadController@upload');
   $app->get('/{cmd}', 'MiscController@catchall1');

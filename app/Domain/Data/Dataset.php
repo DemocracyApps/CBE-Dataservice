@@ -117,6 +117,32 @@ class Dataset
     return $list;
   }
 
+  public static function getDataset($id)
+  {
+    $dataset = null;
+    $sel = "select id,name,entity_id from " . self::$tablename . " WHERE id = " . $id;
+    $list = app('db')
+            ->select($sel);
+    if (sizeof($list) > 0) {
+      $dataset = self::loadDataset($list[0]->entity_id, $id);
+    }
+    return $dataset;
+  }
+
+  private static function loadDataset($entityId, $dsId)
+  {
+    $data = null;
+    $dir = getenv('DATA_DIRECTORY');
+    $dsPath = $dir . "/" . $entityId . "/" . $dsId . "/data";
+    if (file_exists($dsPath)) {
+      $contents = file_get_contents($dsPath);
+      if ($contents) {
+        $data = json_decode($contents, true);
+      }
+    }
+    return $data;
+  }
+
   public function save ()
   {
     if ($this->id < 0) {
