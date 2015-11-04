@@ -46,7 +46,6 @@ class Dataset
 
   private function getCategoryMap()
   {
-    \Log::info("Categories at end: " . json_encode($this->categories));
     $categoriesById = [];
     for ($i=0; $i<sizeof($this->categories); ++$i) {
       $values = [];
@@ -110,6 +109,14 @@ class Dataset
     $this->values[] = $dataItem;
   }
 
+  public static function listEntityDatasets($entityId) {
+    $sel = "select id,name,type,year,datasource_id,updated_at from " . self::$tablename . " WHERE entity_id = " . $entityId;
+    $sel .= " order by id";
+    $list = app('db')
+            ->select($sel);
+    return $list;
+  }
+
   public function save ()
   {
     if ($this->id < 0) {
@@ -126,7 +133,7 @@ class Dataset
       ]);
     }
     else {
-      app('db')->table(self::$tablename)->update([
+      app('db')->table(self::$tablename)->where(['id' => $this->id])->update([
         'name'          => $this->name,
         'year'          => $this->year,
         'type'          => $this->type,
@@ -142,7 +149,6 @@ class Dataset
       $dir = getenv('DATA_DIRECTORY');
       $dsPath = $dir . "/" . $this->entityId . "/" . $this->id;
       $msg = $this->checkOrCreateDataDirectory($dsPath);
-      \Log::info("We'll write it to " . $dsPath . "/data");
       file_put_contents($dsPath . "/data", json_encode($this->getFileOutput()));
     }
   }
@@ -151,10 +157,8 @@ class Dataset
   {
     $msg = "";
     $msg .= "Try to create directory " . $dsPath;
-    \Log::info($msg);
     if (!file_exists($dsPath)) {
       mkdir($dsPath, 0777, true);
-      $msg .= PHP_EOL . "Created directory " . $dsPath;
     }
     return $msg;
   }

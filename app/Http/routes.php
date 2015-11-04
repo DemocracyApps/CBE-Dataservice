@@ -18,11 +18,13 @@ $app->get('/', function () use ($app) {
     return $app->welcome();
 });
 $app->group(['namespace' => 'CBEDataService\Http\Controllers', 'prefix'=>'api/v1'], function ($app) {
-  $app->get('/doit', function () use ($app) {
-    return "Howdoo";
-  });
+
+  $app->get('/datasets', 'DatasetsController@index');
 
   $app->post('/upload', 'UploadController@upload');
+  $app->get('/{cmd}', 'MiscController@catchall1');
+  $app->get('/{cmd1}/{cmd2}', 'MiscController@catchall2');
+  $app->get('/{cmd1}/{cmd2}/{cmd3}', 'MiscController@catchall3');
 });
 
 //Route::group(['prefix' => 'api/v1'], function () {
