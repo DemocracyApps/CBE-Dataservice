@@ -73,7 +73,7 @@ class Dataset
     $output['entityId']     = $this->entityId;
     $output['datasource']   = $this->datasource;
     $output['datasourceId'] = $this->datasourceId;
-    $output['categoryMap']  = $this->getCategoryMap();
+    $output['taxonomy']     = $this->getCategoryMap();
     $output['values']       = $this->values;
     return $output;
   }
