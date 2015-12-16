@@ -8,8 +8,10 @@ class UploadController extends ApiController
 {
 
   public function upload(Request $request) {
-
-    $datasets = CSVProcessor::ProcessSimpleBudget($request->all());
+    $datasets = array();
+    if ($request->get('format') == 'simple-budget') {
+        $datasets = CSVProcessor::ProcessSimpleBudget($request->all());
+    }
     foreach ($datasets as $ds) {
       $ds->save();
     }
