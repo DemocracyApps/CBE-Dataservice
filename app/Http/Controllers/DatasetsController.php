@@ -8,7 +8,8 @@ class DatasetsController extends ApiController
 {
   public function index (Request $request)
   {
-    $entityId = 3;
+    $entityId = $request->get('entity_id');
+    \Log::info("The entity id for datasets index is $entityId");
     $list = Dataset::listEntityDatasets($entityId);
     return $this->respondIndex("Success", $list);
   }

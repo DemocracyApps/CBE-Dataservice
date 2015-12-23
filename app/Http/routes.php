@@ -18,12 +18,12 @@ $app->get('/', function () use ($app) {
     return $app->welcome();
 });
 $app->group(['namespace' => 'CBEDataService\Http\Controllers', 'prefix'=>'api/v1'], function ($app) {
-
   $app->get('/datasets', 'DatasetsController@index');
   $app->get('/datasets/{id}', 'DatasetsController@show');
 
   $app->post('/upload', 'UploadController@upload');
   $app->post('/register_data_source', 'DataSourcesController@register');
+  $app->get('/get_entity_info', 'DataSourcesController@getEntityInfo');
   $app->get('/{cmd}', 'MiscController@catchall1');
   $app->get('/{cmd1}/{cmd2}', 'MiscController@catchall2');
   $app->get('/{cmd1}/{cmd2}/{cmd3}', 'MiscController@catchall3');
