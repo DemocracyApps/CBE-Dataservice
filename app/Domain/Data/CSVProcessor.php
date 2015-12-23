@@ -17,7 +17,6 @@ class CSVProcessor
         'type'            => $data['type'],
         'entity'          => $data['organization'],
         'entityId'        => $data['organization_id'],
-        'datasource'      => $data['datasource_name'],
         'datasourceId'    => $data['datasource_id']
         )
       );

@@ -56,6 +56,7 @@ class DataSource
 
     public function initializeFromObject($obj) 
     {
+        \Log::info("The object is " . json_encode($obj));
         $this->id           = $obj->id;
         $this->name         = $obj->name;
         $this->status       = $obj->status;
@@ -76,7 +77,11 @@ class DataSource
     public static function find ($id) {
         $s = "select id,name,status,source_type,description,entity,entity_id,api_format,data_format,endpoint,frequency,properties,created_at,updated_at from " . self::$tablename . " WHERE id = " . $id;
         $result = app('db')->select($s);
-        $ds = new DataSource($result);
+        $ds = null;
+        if ($result != null) {
+            $ds = new DataSource();
+            $ds->initializeFromObject($result[0]);
+        }
         return $ds;
     }
 

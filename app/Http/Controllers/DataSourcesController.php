@@ -17,6 +17,12 @@ class DataSourcesController extends ApiController
         return $this->respondOK("Datasource saved with id " . $ds->id);
     }
 
+    public function show($dsId) {
+        \Log::info("Here with datasource ID = $dsId");
+        $ds = DataSource::find($dsId);
+        return $this->respondOK("DataSource $dsId", $ds);
+    }
+
     public function getEntityInfo(Request $request) {
         $entityId = $request->get('entity_id');
         \Log::info("I'm in getEntityInfo with id " . $entityId);

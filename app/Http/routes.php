@@ -21,6 +21,8 @@ $app->group(['namespace' => 'CBEDataService\Http\Controllers', 'prefix'=>'api/v1
   $app->get('/datasets', 'DatasetsController@index');
   $app->get('/datasets/{id}', 'DatasetsController@show');
 
+  $app->get('/datasources/{id}', 'DataSourcesController@show');
+
   $app->post('/upload', 'UploadController@upload');
   $app->post('/register_data_source', 'DataSourcesController@register');
   $app->get('/get_entity_info', 'DataSourcesController@getEntityInfo');
