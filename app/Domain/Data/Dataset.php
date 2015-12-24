@@ -24,7 +24,6 @@ class Dataset
     $this->type         = $params['type'];
     $this->entity       = $params['entity'];
     $this->entityId     = $params['entityId'];
-    $this->datasource   = $params['datasource'];
     $this->datasourceId = $params['datasourceId'];
 
     $this->categories = [];
@@ -71,7 +70,6 @@ class Dataset
     $output['type']         = $this->type;
     $output['entity']       = $this->entity;
     $output['entityId']     = $this->entityId;
-    $output['datasource']   = $this->datasource;
     $output['datasourceId'] = $this->datasourceId;
     $output['taxonomy']     = $this->getCategoryMap();
     $output['values']       = $this->values;
@@ -152,7 +150,6 @@ class Dataset
         'type'          => $this->type,
         'entity'        => $this->entity,
         'entity_id'     => $this->entityId,
-        'datasource'    => $this->datasource,
         'datasource_id' => $this->datasourceId,
         'created_at'    => date('Y-m-d H:i:s'),
         'updated_at'    => date('Y-m-d H:i:s')
@@ -165,7 +162,6 @@ class Dataset
         'type'          => $this->type,
         'entity'        => $this->entity,
         'entity_id'     => $this->entityId,
-        'datasource'    => $this->datasource,
         'datasource_id' => $this->datasourceId,
         'updated_at'    => date('Y-m-d H:i:s')
       ]);

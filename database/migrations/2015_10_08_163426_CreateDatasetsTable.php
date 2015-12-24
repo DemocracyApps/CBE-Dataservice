@@ -19,7 +19,6 @@ class CreateDatasetsTable extends Migration
             $table->string('type');
             $table->string('entity');
             $table->integer('entity_id');
-            $table->string('datasource');
             $table->integer('datasource_id');
             $table->timestamps();
         });

@@ -6,6 +6,7 @@ class CSVProcessor
 
   public static function processSimpleBudget($data)
   {
+    \Log::info("In CSVProcessor: " + json_encode($data));
     $datasets = [];
     $nCategories = $data['category_count'];
     $fileData = $data['fileData'];
