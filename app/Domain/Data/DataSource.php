@@ -56,7 +56,7 @@ class DataSource
 
     public function initializeFromObject($obj) 
     {
-        \Log::info("The object is " . json_encode($obj));
+//        \Log::info("The object is " . json_encode($obj));
         $this->id           = $obj->id;
         $this->name         = $obj->name;
         $this->status       = $obj->status;
@@ -89,9 +89,9 @@ class DataSource
         $s = "select id,name,status,source_type,description,entity,entity_id,api_format,data_format,endpoint,frequency,properties,created_at,updated_at from " . self::$tablename . " WHERE entity_id = " . $entityId;
         $s .= " order by id";
         $datasources = array();
-        \Log::info("Here we go with entityId $entityId");
+
         $list = app('db')->select($s);
-        \Log::info(json_encode($list));
+
         for ($i=0; $i<sizeof($list); ++$i) {
             $ds = new DataSource();
             $ds->initializeFromObject($list[$i]);
