@@ -23,6 +23,29 @@ class DataSourcesController extends ApiController
         return $this->respondOK("DataSource $dsId", $ds);
     }
 
+    public function update(Request $request, $dsId) {
+        $ds = DataSource::find($dsId);
+        if (!$ds) $this->respondNotFound("No datasource $dsId found.");
+        $params = $request->all();
+        foreach ($params as $key => $value) {
+            \Log::info("Got key = $key, value = $value");
+            if (! property_exists('CBEDataService\Domain\Data\DataSource', $key)) {
+                return $this->respondFailedValidation("Invalid datasource property: $key");
+            }
+            if ($key == 'status') {
+                if ($value == 'active' || $value == 'inactive') {
+                    $ds->status = $value;
+                    \Log::info("Setting status to $value");
+                }
+                else {
+                    return $this->respondFailedValidation("Invalid status value: $value");
+                }
+            }
+        }
+        $ds->save();
+        return $this->respondOK("Datasource $dsId updated successfully");
+    }
+
     public function getEntityInfo(Request $request) {
         $entityId = $request->get('entity_id');
         \Log::info("I'm in getEntityInfo with id " . $entityId);
