@@ -13,7 +13,8 @@ class Kernel extends ConsoleKernel
      * @var array
      */
     protected $commands = [
-        'CBEDataService\Console\Commands\CDS'
+        'CBEDataService\Console\Commands\CDS',
+        'CBEDataService\Console\Commands\Fetch'
     ];
 
     /**
@@ -24,6 +25,6 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-        //
+        $schedule->command('cds:fetch')->everyFiveMinutes()->withoutOverlapping();
     }
 }
