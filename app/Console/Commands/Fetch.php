@@ -36,21 +36,21 @@ class Fetch extends Command
    */
   public function handle()
   {
-
-    \Log::info("I am in Fetch!");
-    return;
+    // For now we just process these here, but later we'll probably throw them into a queue
+    // for worker processes to handle individually.
     $id = $this->argument('fetchId');
-
+    \Log::info("In fetch with id = " . $id);
     if ($id != null) {
       $task = FetchTask::find($id);
+      $task->fetch();
     }
     else {
+      \Log::info("Running fetch tasks");
       $now = time();
-      $tasks = FetchTask::where('next', '<', date('Y-m-d H:i:s', $now))->get();
+      $tasks = FetchTask::getNextTasks($now);
       foreach ($tasks as $task) {
         echo "Task ID = $task->id and next = $task->next" . PHP_EOL;
         $result = $task->fetch();
-        echo ('Column headers = ' . json_encode($result->headers) . PHP_EOL);
       }
     }
   }

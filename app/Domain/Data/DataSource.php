@@ -1,5 +1,7 @@
 <?php namespace CBEDataService\Domain\Data;
 
+use CBEDataService\Domain\Fetch\FetchTask;
+
 class DataSource 
 {
     protected static $tablename = "data_sources";
@@ -23,6 +25,44 @@ class DataSource
     {
         $this->status       = "inactive";
         $this->frequency    = "ondemand";
+    }
+
+    public function activate()
+    {
+        if ($this->frequency != "ondemand") {
+            $ft = new FetchTask();
+            $ft->dataSource = $this->id;
+            $ft->endpoint = $this->endpoint;
+            if ($this->apiFormat == 'json') {
+                $ft->fetcher = 'SimpleJSON';
+            }
+            $ft->dataFormat = $this->dataFormat;
+            $ft->count = 1; // For now, just keep it simple even tho fetcher can support more.
+            if ($this->frequency == 'day') {
+                $ft->frequency = 'day';
+            }
+            else if ($this->frequency == 'hour') {
+                $ft->frequency = 'hour';
+            }
+            else if ($this->frequency == 'week') {
+                $ft->frequency = 'week';
+            }
+            else {
+                $ft->frequency = 'day';
+            }
+            $ft->scheduleNextFetch();
+            $ft->save();
+        }
+        $this->status = 'active';
+        $this->save();
+    }
+
+    public function deactivate()
+    {
+        $s = "delete from " . FetchTask::$tablename . " where datasource_id=" . $this->id;
+        $result = app('db')->delete($s);
+        $this->status = 'inactive';
+        $this->save();
     }
 
     public function initializeFromMap($params) 

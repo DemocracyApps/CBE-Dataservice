@@ -3,86 +3,112 @@
 class FetchTask
 {
     const DATASET_OUTPUT_VERSION = "1.0.0";
-    protected static $tablename = "fetch_tasks";
+    public static $tablename = "fetch_tasks";
 
     public $id = -1;
     public $frequency = "ondemand";
-    public $datasource = null;
-    public $datasourceId = -1;
-    public $entity = null;
-    public $entityId = -1;
+    public $dataSource = null;
     public $endpoint = null;
+    public $fetcher = 'SimpleJSON';
+    public $dataFormat = 'simple-budget';
+    public $count = 1;
+    public $next = null;
+    public $properties = "";
 
-    public function __construct($frequency, $params) 
+    public function __construct() 
     {
-        $this->frequency    = $frequency;
-        $this->entity       = $params['entity'];
-        $this->entityId     = $params['entityId'];
-        $this->datasource   = $params['datasource'];
-        $this->datasourceId = $params['datasourceId'];
-        $this->endpoint     = $params['endpoint'];
+        $this->dataSource   = null;
+        $this->endpoint     = null;
+        $this->frequency    = 'day';
+        $this->fetcher      = 'SimpleJSON';
+        $this->dataFormat   = 'simple-budget';
+        $this->count        = 1;
         $this->next         = null;
     }
 
-    public function initializeFromSpec ($spec) {
-
-        if (array_key_exists('datasource', $spec)) {
-            $this->entity = $spec['datasource'];
-        }
-        if (array_key_exists('datasourceId', $spec)) {
-            $this->entity = $spec['datasourceId'];
-        }
-        else {
-            return array('status'=>'error', 'Message'=>'Datasource ID is required');
-        }
-
-        if (array_key_exists('frequency', $spec)) {
-            $this->frequency = $spec['frequency'];
-        }
-        else {
-            $this->frequency = 'OnDemand';
-        }
-
-        if (array_key_exists('endpoint', $spec)) {
-            $this->endpoint = $spec['endpoint'];
+    public function save ()
+    {
+        if ($this->id < 0) {
+            $this->id = app('db')->table(self::$tablename)->insertGetId([
+                'datasource_id'   => $this->dataSource,
+                'endpoint'      => $this->endpoint,
+                'frequency'     => $this->frequency,
+                'fetcher'       => $this->fetcher,
+                'data_format'   => $this->dataFormat,
+                'count'         => $this->count,
+                'next'          => $this->next,
+                'properties'    => $this->properties,
+                'created_at'    => date('Y-m-d H:i:s'),
+                'updated_at'    => date('Y-m-d H:i:s')
+              ]);
         }
         else {
-            return array('status'=>'error','message'=>'Endpoint is required');
+            app('db')->table(self::$tablename)->where(['id' => $this->id])->update([
+                'datasource_id'   => $this->dataSource,
+                'endpoint'      => $this->endpoint,
+                'frequency'     => $this->frequency,
+                'fetcher'       => $this->fetcher,
+                'data_format'   => $this->dataFormat,
+                'count'         => $this->count,
+                'next'          => $this->next,
+                'properties'    => $this->properties,
+                'updated_at'    => date('Y-m-d H:i:s')
+            ]);
         }
+    }
 
-        if (array_key_exists('fetcher', $spec)) {
-            $this->fetcher = $spec['fetcher'];
-        }
-        else {
-            return array('status'=>'error', 'message'=>"Fetcher is required");
-        }
+    public function initializeFromObject($obj) 
+    {
+        $this->id           = $obj->id;
+        $this->dataSource   = $obj->datasource_id;
+        $this->endpoint     = $obj->endpoint;
+        $this->frequency    = $obj->frequency;
+        $this->fetcher      = $obj->fetcher;
+        $this->dataFormat   = $obj->data_format;
+        $this->count        = $obj->count;
+        $this->next         = $obj->next;
+        $this->properties   = $obj->properties;
+    }
 
-        if (array_key_exists('entity', $spec)) {
-            $this->entity = $spec['entity'];
+    public static function find ($id) {
+        $s = "select id,datasource_id,endpoint,frequency,fetcher,data_format,count,next,properties,created_at,updated_at from " . self::$tablename . " WHERE id = " . $id;
+        $result = app('db')->select($s);
+        $ft = null;
+        if ($result != null) {
+            $ft = new FetchTask();
+            $ft->initializeFromObject($result[0]);
         }
-        if (array_key_exists('entityId', $spec)) {
-            $this->entity = $spec['entityId'];
+        return $ft;
+    }
+    public static function getNextTasks($now)
+    {
+//      $tasks = FetchTask::where('next', '<', date('Y-m-d H:i:s', $now))->get();
+        $s = "select id,datasource_id,endpoint,frequency,fetcher,data_format,count,next,properties,created_at,updated_at from " . self::$tablename;
+        $s .= " WHERE next < '" . date('Y-m-d H:i:s', $now) . "'";
+        $results = app('db')->select($s);
+        $tasks = array();
+        if ($results != null) {
+            foreach ($results as $result) {
+                $ft = new FetchTask();
+                $ft->initializeFromObject($result);
+                $tasks[] = $ft;
+            }
         }
-
-        if (array_key_exists('properties', $spec)) {
-            $this->properties = $spec['properties'];
-        }
-
-        $this->scheduleNextFetch();
-
-        return array('status'=>'ok', 'message'=>'OK');
+        return $tasks;
     }
 
     public function fetch()
     {
-        echo "Fetching " . $this->id . PHP_EOL;
+        \Log::info("Fetching " . $this->id);
         $fetcherClassName = '\CBEDataService\Domain\Fetch\Fetchers\\' . $this->fetcher . "Fetcher";
         $reflectionMethod = new \ReflectionMethod($fetcherClassName, 'fetch');
         if ($reflectionMethod == null) throw new \Exception("No such method!");
-        echo 'Calling fetcher' . PHP_EOL;
-        $result = $reflectionMethod->invokeArgs(null, array($this->url));
+        \Log::info("Calling fetcher");
+        $result = $reflectionMethod->invokeArgs(null, array($this->endpoint));
 
-        echo ('Back from fetcher with result error = ' . $result->error);
+        \Log::info('Back from fetcher with error = ' . json_encode($result->error));
+
+
         $this->scheduleNextFetch();
         $this->save();
         return $result;
@@ -98,6 +124,8 @@ class FetchTask
         }
         else {
             $delta = 0;
+            \Log::info("Incoming time = " . $this->next);
+            \Log::info("Frequency = " . $this->frequency);
             $current = strtotime($this->next);
             $count = $this->count > 0?$this->count:1;
 
@@ -121,6 +149,8 @@ class FetchTask
             }
             if (time() > $current) $current += $delta;
             $this->next = date('Y-m-d H:i:s', $current);
+            \Log::info("Outgoing time = " . $this->next);
+
         }
     }
 }

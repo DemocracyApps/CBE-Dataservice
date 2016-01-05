@@ -33,16 +33,21 @@ class DataSourcesController extends ApiController
                 return $this->respondFailedValidation("Invalid datasource property: $key");
             }
             if ($key == 'status') {
-                if ($value == 'active' || $value == 'inactive') {
-                    $ds->status = $value;
-                    \Log::info("Setting status to $value");
+                if ($value == 'active') {
+                    if ($ds->status != 'active') { // Just make it idempotent
+                        $ds->activate();
+                    }
+                }
+                else if ($value == 'inactive') {
+                    if ($ds->status != 'inactive') {
+                        $ds->deactivate();
+                    }
                 }
                 else {
                     return $this->respondFailedValidation("Invalid status value: $value");
                 }
             }
         }
-        $ds->save();
         return $this->respondOK("Datasource $dsId updated successfully");
     }
 
