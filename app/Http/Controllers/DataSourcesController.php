@@ -27,8 +27,8 @@ class DataSourcesController extends ApiController
         $ds = DataSource::find($dsId);
         if (!$ds) $this->respondNotFound("No datasource $dsId found.");
         $params = $request->all();
+        $needSave = false;
         foreach ($params as $key => $value) {
-            \Log::info("Got key = $key, value = $value");
             if (! property_exists('CBEDataService\Domain\Data\DataSource', $key)) {
                 return $this->respondFailedValidation("Invalid datasource property: $key");
             }
@@ -47,7 +47,12 @@ class DataSourcesController extends ApiController
                     return $this->respondFailedValidation("Invalid status value: $value");
                 }
             }
+            else { // Just a normal value update
+                $ds->setValue($key, $value);
+                $needSave = true;
+            }
         }
+        if ($needSave) $ds->save();
         return $this->respondOK("Datasource $dsId updated successfully");
     }
 

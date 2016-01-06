@@ -16,7 +16,7 @@ class DataSource
     public $entityId = -1;
     public $entity = null;
     public $dataFormat = null;
-    public $apiEndpoint = null;
+    public $endpoint = null;
     public $apiFormat = null;
     public $frequency = null;
     public $properties = null;
@@ -25,6 +25,16 @@ class DataSource
     {
         $this->status       = "inactive";
         $this->frequency    = "ondemand";
+    }
+
+    public function setValue ($key, $value, $save = false) 
+    {
+        if (! property_exists('CBEDataService\Domain\Data\DataSource', $key) ||
+            in_array($key, array('id', 'last', 'lastDate'))) {
+            throw new \Exception("Attempt to set invalid DataSource property $key");
+        }
+        $this->{$key} = $value;
+        if ($save) $this->save();
     }
 
     public function activate()

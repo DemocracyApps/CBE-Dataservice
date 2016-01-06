@@ -108,7 +108,6 @@ class FetchTask
 
         \Log::info('Back from fetcher with error = ' . json_encode($result->error));
 
-
         $this->scheduleNextFetch();
         $this->save();
         return $result;
