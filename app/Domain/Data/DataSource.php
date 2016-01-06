@@ -27,6 +27,15 @@ class DataSource
         $this->frequency    = "ondemand";
     }
 
+    public function getFetcher() 
+    {
+        $fetcher = 'SimpleCSV';
+        if ($this->apiFormat == 'json') {
+            $fetcher = 'SimpleJSON';
+        }
+        return $fetcher;
+    }
+
     public function activate()
     {
         \Log::info("Activating " . $this->id);
@@ -34,9 +43,7 @@ class DataSource
             $ft = new FetchTask();
             $ft->dataSource = $this->id;
             $ft->endpoint = $this->endpoint;
-            if ($this->apiFormat == 'json') {
-                $ft->fetcher = 'SimpleJSON';
-            }
+            $ft->fetcher = $this->getFetcher();
             $ft->dataFormat = $this->dataFormat;
             $ft->count = 1; // For now, just keep it simple even tho fetcher can support more.
             if ($this->frequency == 'day') {

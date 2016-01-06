@@ -23,6 +23,21 @@ class DataSourcesController extends ApiController
         return $this->respondOK("DataSource $dsId", $ds);
     }
 
+    public function execute (Request $request, $dsId) {
+        \Log::info("I am being asked to execute datasource $dsId");
+        $ds = DataSource::find($dsId);
+        if ($ds == null) {
+            return $this->respondNotFound("Unable to find datasource with id $dsId");
+        }
+        $fetcherClassName = '\CBEDataService\Domain\Fetch\Fetchers\\' . $ds->getFetcher() . "Fetcher";
+        $reflectionMethod = new \ReflectionMethod($fetcherClassName, 'fetch');
+        if ($reflectionMethod == null) throw new \Exception("No such method!");
+        \Log::info("Calling fetcher ". $fetcherClassName);
+        $result = $reflectionMethod->invokeArgs(null, array($ds->endpoint));
+        \Log::info('Back from fetcher with error = ' . json_encode($result->error));
+        return $this->respondOK("Did it with error " . json_encode($result->error));
+    }
+
     public function update(Request $request, $dsId) {
         $ds = DataSource::find($dsId);
         if (!$ds) $this->respondNotFound("No datasource $dsId found.");
