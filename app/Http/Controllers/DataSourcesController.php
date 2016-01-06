@@ -28,31 +28,26 @@ class DataSourcesController extends ApiController
         if (!$ds) $this->respondNotFound("No datasource $dsId found.");
         $params = $request->all();
         $needSave = false;
-        foreach ($params as $key => $value) {
-            if (! property_exists('CBEDataService\Domain\Data\DataSource', $key)) {
-                return $this->respondFailedValidation("Invalid datasource property: $key");
-            }
-            if ($key == 'status') {
-                if ($value == 'active') {
-                    if ($ds->status != 'active') { // Just make it idempotent
-                        $ds->activate();
-                    }
-                }
-                else if ($value == 'inactive') {
-                    if ($ds->status != 'inactive') {
-                        $ds->deactivate();
-                    }
-                }
-                else {
-                    return $this->respondFailedValidation("Invalid status value: $value");
+        if (array_key_exists('status', $params)) {
+            $value = $params['status'];
+            if ($value == 'active') {
+                if ($ds->status != 'active') { // Just make it idempotent
+                    $ds->activate();
                 }
             }
-            else { // Just a normal value update
-                $ds->setValue($key, $value);
-                $needSave = true;
+            else if ($value == 'inactive') {
+                if ($ds->status != 'inactive') {
+                    $ds->deactivate();
+                }
             }
+            else {
+                return $this->respondFailedValidation("Invalid status value: $value");
+            }
+            unset($params['status']);
         }
-        if ($needSave) $ds->save();
+        $ds->updateFromMap($params);
+        $ds->save();
+
         return $this->respondOK("Datasource $dsId updated successfully");
     }
 

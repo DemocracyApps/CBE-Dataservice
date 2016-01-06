@@ -27,18 +27,9 @@ class DataSource
         $this->frequency    = "ondemand";
     }
 
-    public function setValue ($key, $value, $save = false) 
-    {
-        if (! property_exists('CBEDataService\Domain\Data\DataSource', $key) ||
-            in_array($key, array('id', 'last', 'lastDate'))) {
-            throw new \Exception("Attempt to set invalid DataSource property $key");
-        }
-        $this->{$key} = $value;
-        if ($save) $this->save();
-    }
-
     public function activate()
     {
+        \Log::info("Activating " . $this->id);
         if ($this->frequency != "ondemand") {
             $ft = new FetchTask();
             $ft->dataSource = $this->id;
@@ -69,6 +60,7 @@ class DataSource
 
     public function deactivate()
     {
+        \Log::info("Deactivating " . $this->id);
         $s = "delete from " . FetchTask::$tablename . " where datasource_id=" . $this->id;
         $result = app('db')->delete($s);
         $this->status = 'inactive';
@@ -122,6 +114,59 @@ class DataSource
             $this->frequency = $obj->frequency;
         }
         $this->properties = $obj->properties;
+    }
+
+    public function updateFromMap($params) 
+    {
+        if ($this->sourceType != $params['sourceType']) {
+            if ($this->sourceType == 'api') { // Deactivate if necessary
+                if ($this->frequency != 'ondemand') $this->deactivate();
+                if ($params['sourceType'] == 'file') {
+                    $this->status = 'active';
+                    $this->frequency = 'ondemand';
+                }
+            }
+            else if ($this->sourceType == 'file') {
+                $this->status = 'inactive';
+                $this->frequency = 'ondemand';
+            }
+        }
+        else if ($this->frequency != $params['frequency']) {
+            if ($this->sourceType == 'api') {
+                if ($this->frequency == 'ondemand') {
+                    $this->status = 'inactive';
+                }
+                else {
+                    $this->deactivate();
+                }
+            }
+        }
+        $this->sourceType   = $params['sourceType'];
+        $this->name         = $params['name'];
+        if (array_key_exists('description', $params)) {
+            $this->description = $params['description'];
+        }
+        else {
+            $this->description = "";
+        }
+        $this->entity       = $params['entity'];
+        $this->entityId     = $params['entityId'];
+        $this->dataFormat   = $params['dataFormat'];
+        $this->frequency    = "ondemand";
+        $this->endpoint     = null;
+        $this->apiFormat    = null;
+        if ($this->sourceType == 'api') {
+            $this->frequency = $params['frequency'];
+            $this->apiFormat = $params['apiFormat'];
+            $this->endpoint  = $params['endpoint'];
+        }
+        if ($this->frequency == 'ondemand') $this->status = 'active';
+        if (array_key_exists('properties', $params)) {
+            $props = json_decode($params['properties']);
+            foreach ($props as $key => $value) {
+                $this->properties[$key] = $value;
+            }
+        }
     }
 
     public static function find ($id) {
