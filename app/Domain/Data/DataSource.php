@@ -36,6 +36,15 @@ class DataSource
         return $fetcher;
     }
 
+    public function getDataProcessor()
+    {
+        $processor = 'SimpleBudget';
+        if ($this->dataFormat == 'simple-project') {
+            $processor = 'SimpleProject';
+        }
+        return $processor;
+    }
+
     public function activate()
     {
         \Log::info("Activating " . $this->id);

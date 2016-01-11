@@ -34,8 +34,19 @@ class DataSourcesController extends ApiController
         if ($reflectionMethod == null) throw new \Exception("No such method!");
         \Log::info("Calling fetcher ". $fetcherClassName);
         $result = $reflectionMethod->invokeArgs(null, array($ds->endpoint));
-        \Log::info('Back from fetcher with error = ' . json_encode($result->error));
-        return $this->respondOK("Did it with error " . json_encode($result->error));
+        if ($result->error) {
+            return $this->respondInternalError($result->message);
+        }
+        else {
+            $processorClassName = '\CBEDataService\Domain\Data\Processors\\' . $ds->getDataProcessor() . 'Processor';
+            $reflectionMethod = new \ReflectionMethod($processorClassName, 'process');
+            if ($reflectionMethod == null) throw new \Exception("No such method!");
+            \Log::info("Calling processor ". $processorClassName);
+            $result = $reflectionMethod->invokeArgs(null, array($ds, $result->data));
+
+            \Log::info('Back from processing with: ' . json_encode($result));
+            return $this->respondOK("Successfully executed datasource fetch");;
+        }
     }
 
     public function update(Request $request, $dsId) {

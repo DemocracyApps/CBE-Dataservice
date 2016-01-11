@@ -27,7 +27,7 @@ class SimpleJSONFetcher extends Fetcher
         }
         else {
             curl_close($curl);
-            $result->data = json_decode($curl_response);
+            $result->data = json_decode($curl_response, true);
         }
         return $result;
     }
