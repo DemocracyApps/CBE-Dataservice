@@ -42,10 +42,12 @@ class DataSourcesController extends ApiController
             $reflectionMethod = new \ReflectionMethod($processorClassName, 'process');
             if ($reflectionMethod == null) throw new \Exception("No such method!");
             \Log::info("Calling processor ". $processorClassName);
-            $result = $reflectionMethod->invokeArgs(null, array($ds, $result->data));
-
-            \Log::info('Back from processing with: ' . json_encode($result));
-            return $this->respondOK("Successfully executed datasource fetch");;
+            $dataset = $reflectionMethod->invokeArgs(null, array($ds, $result->data));
+            //\Log::info("Back from processing with result = " . json_encode($dataset));
+            $dataset->save();
+            //\Log::info('Back from processing with: ' . json_encode($result));
+            \Log::info("Done processing");
+            return $this->respondOK("Successfully executed datasource fetch and processing");;
         }
     }
 

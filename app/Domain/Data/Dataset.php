@@ -48,8 +48,9 @@ class Dataset
     $categoriesById = [];
     for ($i=0; $i<sizeof($this->categories); ++$i) {
       $values = [];
-      foreach($this->categories[$i]['values'] as $key => $id) {
-        $values[$id] = $key;
+      foreach($this->categories[$i]['values'] as $key => $val) {
+        $id = $val['id'];
+        $values[$id] = $val;
       }
       $categoriesById[] = array(
         'name' => $this->categories[$i]['name'],
@@ -76,6 +77,19 @@ class Dataset
     return $output;
   }
 
+  public function registerCategoryMetadata($categoryIndex, $key, $meta) {
+    if ($categoryIndex < 0 || $categoryIndex >= sizeof($this->categories)) {
+      throw new \Exception("Invalid category index $categoryIndex in registerCategoryMetadata");
+    }
+    $category = $this->categories[$categoryIndex];
+    if (!array_key_exists($key, $this->categories[$categoryIndex]['values'])) {
+      throw new \Exception("Invalid key $key for " . $this->categories[$categoryIndex]['name'] . "in registerCategoryMetadata");
+    }
+    foreach ($meta as $k => $val) {
+      $this->categories[$categoryIndex]['values'][$key][$k] = $val;
+    }
+  }
+
   private function addCategories($categories)
   {
     if (sizeof($categories) > sizeof($this->categories)) {
@@ -85,12 +99,13 @@ class Dataset
     $refs = [];
     for ($i = 0; $i < sizeof($categories); ++$i) {
       $id = -1;
-      if (!array_key_exists($categories[$i], $this->categories[$i]['values'])) {
+      $key = $categories[$i];
+      if (!array_key_exists($key, $this->categories[$i]['values'])) {
         $id = $this->categories[$i]['currentId']++;
-        $this->categories[$i]['values'][$categories[$i]] = $id;
+        $this->categories[$i]['values'][$key] = array('id' => $id, 'key' => $key);
       }
       else {
-        $id = $this->categories[$i]['values'][$categories[$i]];
+        $id = $this->categories[$i]['values'][$key]['id'];
       }
       $refs[] = $id;
     }
